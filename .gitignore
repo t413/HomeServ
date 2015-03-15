@@ -1,4 +1,11 @@
+## cmake generated files ##
 Makefile
 CMakeCache.txt
 *.cmake
 CMakeFiles/
+CMakeScripts/
+*.xcodeproj
+
+## build files ##
+homeserv
+homeserv.build/
