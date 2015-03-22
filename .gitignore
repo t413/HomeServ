@@ -8,5 +8,4 @@ CMakeScripts/
 /.idea/
 
 ## build files ##
-homeserv
 homeserv.build/

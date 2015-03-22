@@ -1,16 +1,21 @@
 cmake_minimum_required (VERSION 2.6)
-project (homeserv)
+project (libhomeserv CXX)
 
+## ---------------------- ##
+##  c++11 compiler check  ##
+## ---------------------- ##
 
-## -------------- ##
-##  find sources  ##
-## -------------- ##
+include(CheckCXXCompilerFlag)
+CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
+if(COMPILER_SUPPORTS_CXX11)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+else()
+  message(SEND_ERROR "requires c++11 ! (have ${CMAKE_CXX_COMPILER})")
+endif()
 
-file(GLOB homeserv_hdrs "src/*.h")
-file(GLOB homeserv_srcs "src/*.cpp")
-
-# find_package(PkgConfig REQUIRED)
-# pkg_check_modules(_JSONCPP REQUIRED jsoncpp)
+## ------------------------- ##
+##  find Poco library macro  ##
+## ------------------------- ##
 
 macro(findPoco) #variable args are each desired package
   set(POCO_LIBS "")
@@ -22,6 +27,17 @@ macro(findPoco) #variable args are each desired package
     set(POCO_LIBS ${POCO_LIBS} ${POCO_LIB_${f}})
   endforeach()
 endmacro()
+
+
+## ------------- ##
+##  libhomeserv  ##
+## ------------- ##
+
+file(GLOB homeserv_hdrs "src/*.h")
+file(GLOB homeserv_srcs "src/*.cpp")
+
+# find_package(PkgConfig REQUIRED)
+# pkg_check_modules(_JSONCPP REQUIRED jsoncpp)
 
 
 ## -------------- ##
@@ -39,18 +55,7 @@ set(LIBS ${LIBS}
     ${LIBOPENZWAVE_LIBRARY}
 )
 
-add_executable(homeserv ${homeserv_hdrs} ${homeserv_srcs})
-target_link_libraries(homeserv ${LIBS})
+add_library(libhomeserv ${homeserv_hdrs} ${homeserv_srcs})
+target_link_libraries(libhomeserv ${LIBS})
 
-
-## ---------------------- ##
-##  c++11 compiler check  ##
-## ---------------------- ##
-
-include(CheckCXXCompilerFlag)
-CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
-if(COMPILER_SUPPORTS_CXX11)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-else()
-  message(SEND_ERROR "requires c++11 ! (have ${CMAKE_CXX_COMPILER})")
-endif()
+subdirs(tests homeserv_main)
