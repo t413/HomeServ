@@ -5,6 +5,7 @@ CMakeCache.txt
 CMakeFiles/
 CMakeScripts/
 *.xcodeproj
+/.idea/
 
 ## build files ##
 homeserv
