@@ -19,11 +19,20 @@ namespace home {
         : manager(manager), nodeId(nodeId), homeId(homeId) {{}
     }
 
+    void ZWaveLight::addValueId(OpenZWave::ValueID &v) {
+        values.push_back(v);
+    }
+
     LightLevel ZWaveLight::getLevel() {
+        float out;
+        OpenZWave::ValueID &v = values.at(0);
+        manager->GetValueAsFloat(v, &out);
+        return out;
     }
 
     void ZWaveLight::setLevel(LightLevel level) {
-        manager->SetNodeLevel(homeId,nodeId,level);
+        uint8_t out = (uint8_t) mapConstrain(level, 0, 1, 0, 100);
+        manager->SetNodeLevel(homeId,nodeId, out);
     }
 
     int    ZWaveLight::getId()           { return nodeId; }

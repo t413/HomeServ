@@ -81,8 +81,24 @@ namespace serv {
         const string& type = notifyTypeMap.at(n->GetType());
         app->logger().notice("ServerApp::OnNotification type:" + type);
         if (type == "NodeAdded") {
-            app->lights.push_back(new home::ZWaveLight(app->manager, n->GetNodeId(), n->GetHomeId()));
+            app->getZWaveLight(id); //adds if not present!
+        } else if (type == "ValueAdded") {
+            app->getZWaveLight(id); //adds if not present!
         }
+    }
+
+    home::ZWaveLight* ServerApp::getZWaveLight(OpenZWave::ValueID &id) {
+        int nodeid = id.GetNodeId();
+        for (home::Light* l : lights) {
+            home::ZWaveLight* zl = dynamic_cast<home::ZWaveLight*>(l);
+            if (zl && zl->getId() == nodeid) { return zl; }
+        }
+        logger().notice("ServerApp adding new ZWaveLight id:" + to_string(nodeid));
+        home::ZWaveLight* zl = new home::ZWaveLight(manager, id.GetNodeId(), id.GetHomeId());
+        zl->addValueId(id);
+        lights.push_back(zl);
+        //throw std::out_of_range("ServerApp::getZWaveLight-- no node ID " + to_string(nodeid));
+        return zl;
     }
 
     /* ------------------ */
@@ -118,7 +134,7 @@ namespace serv {
     }
 
 
-    const map<OpenZWave::Notification::NotificationType, const string> ServerApp::notifyTypeMap = {
+    const map<int, const string> ServerApp::notifyTypeMap = {
             { OpenZWave::Notification::Type_ValueAdded ,      "ValueAdded" },       // A new node value has been added to OpenZWave's list. These notifications occur after a node has been discovered, and details of its command classes have been received.  Each command class may generate one or more values depending on the complexity of the item being represented.
             { OpenZWave::Notification::Type_ValueRemoved,     "ValueRemoved" },     // A node value has been removed from OpenZWave's list.  This only occurs when a node is removed.
             { OpenZWave::Notification::Type_ValueChanged,     "ValueChanged" },     // A node value has been updated from the Z-Wave network and it is different from the previous value.

@@ -1,6 +1,8 @@
 #pragma once
 
 #include <string>
+#include <vector>
+#include <value_classes/ValueID.h>
 
 namespace OpenZWave { class Manager; }
 namespace Poco { namespace JSON { class Object; } }
@@ -21,8 +23,10 @@ namespace home {
     class ZWaveLight : public Light {
         OpenZWave::Manager *manager;
         int nodeId, homeId;
+        std::vector<OpenZWave::ValueID> values;
     public:
         ZWaveLight(OpenZWave::Manager *manager, int nodeId, int homeId);
+        void addValueId(OpenZWave::ValueID &v);
 
         // Light contract:
         LightLevel getLevel();

@@ -5,23 +5,25 @@
 #include <Poco/Util/ServerApplication.h>
 #include <Poco/Net/HTTPRequestHandler.h>
 #include <Poco/Net/HTTPRequestHandlerFactory.h>
-#include <Notification.h>
 
 //Forward declarations:
 namespace OpenZWave {
     class Manager;
+    class ValueID;
     class Notification;
 }
 namespace home {
     class Light;
+    class ZWaveLight;
 }
 
 namespace serv {
 
     class ServerApp : public Poco::Util::ServerApplication {
         OpenZWave::Manager* manager;
-        static const std::map<OpenZWave::Notification::NotificationType , const std::string> notifyTypeMap;
+        static const std::map<int , const std::string> notifyTypeMap;
         static void OnNotification (const OpenZWave::Notification* n, void* context);
+        home::ZWaveLight* getZWaveLight(OpenZWave::ValueID& id);
 
         void defineOptions(Poco::Util::OptionSet& options);
         void printProperties(const std::string& base);
